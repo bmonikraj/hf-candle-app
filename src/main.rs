@@ -1,34 +1,26 @@
-use candle_core::{Device, Result, Tensor};
-use candle_nn::{Linear, Module};
+mod service;
+use crate::service::sum::Sum;
 
-struct Model {
-    first: Linear,
-    second: Linear
-}
+fn main() -> () {
+    std::println!("Hello, world!");
+    let a: i64 = 25;
+    let b: i64 = 75;
+    let _sum = Sum::new(a, b);
+    let addition = _sum.add();
 
-impl Model {
-    fn forward(&self, image: &Tensor) -> Result<Tensor> {
-        let x = self.first.forward(image)?;
-        let x = x.relu()?;
-        self.second.forward(&x)
+    match addition {
+        Ok(value) => println!("sum of {} and {} is {}", a, b, value),
+        Err(err) => println!("error: {}", err)
     }
-}
 
-fn main() -> Result<()> {
-    let device = Device::new_metal(0)?;
+    let a: i64 = -25;
+    let b: i64 = 75;
+    let _sum = Sum::new(a, b);
+    let addition = _sum.add();
 
-    let weight = Tensor::randn(0f32, 1.0, (100, 784), &device)?;
-    let bias = Tensor::randn(0f32, 1.0, (100,), &device)?;
-    let first = Linear::new(weight, Some(bias));
-    let weight = Tensor::randn(0f32, 1.0, (10, 100), &device)?;
-    let bias = Tensor::randn(0f32, 1.0, (10, ), &device)?;
-    let second = Linear::new(weight, Some(bias));
-    let model = Model { first, second };
+    match addition {
+        Ok(value) => println!("sum of {} and {} is {}", a, b, value),
+        Err(err) => println!("error: {}", err)
+    }
 
-    let dummy_image = Tensor::randn(0f32, 1.0, (1, 784), &device)?;
-
-    let digit = model.forward(&dummy_image)?;
-
-    println!("Digit {digit:?} digit");
-    Ok(())
 }
